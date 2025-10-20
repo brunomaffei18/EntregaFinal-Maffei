@@ -1,0 +1,36 @@
+{% extends "task_manager/base.html" %}
+{% block title %}Proyectos{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="m-0">Proyectos</h4>
+  <a href="{% url 'proyecto_create' %}" class="btn btn-primary">Nuevo</a>
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th class="text-nowrap">Nombre</th>
+            <th>Descripción</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in proyectos %}
+            <tr>
+              <td class="fw-medium">{{ p.nombre }}</td>
+              <td class="text-body-secondary">{{ p.descripcion|default:"—" }}</td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="2" class="text-center text-body-secondary py-4">No hay proyectos.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

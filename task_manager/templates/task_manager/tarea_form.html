@@ -1,0 +1,70 @@
+{% extends "task_manager/base.html" %}
+{% block title %}Crear Tarea{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xxl-7">
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Crear Tarea</h4>
+
+        <form method="post" class="needs-validation">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" name="titulo" class="form-control" placeholder="Ingrese el título..." required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea name="descripcion" class="form-control" rows="6" placeholder="Describa la tarea..."></textarea>
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-6">
+              <label class="form-label">Estado</label>
+              <select name="estado" class="form-select">
+                {% for key,label in form.estado.field.choices %}
+                  <option value="{{ key }}">{{ label }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Fecha límite</label>
+              <input type="date" name="fecha_limite" class="form-control">
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Proyecto</label>
+              <select name="proyecto" class="form-select">
+                <option value="">---------</option>
+                {% for obj in form.proyecto.field.queryset %}
+                  <option value="{{ obj.pk }}">{{ obj }}</option>
+                {% endfor %}
+              </select>
+            </div>
+
+            <div class="col-12 col-md-6">
+              <label class="form-label">Etiquetas</label>
+              <select name="etiquetas" multiple class="form-select" size="6">
+                {% for obj in form.etiquetas.field.queryset %}
+                  <option value="{{ obj.pk }}">{{ obj }}</option>
+                {% endfor %}
+              </select>
+              <div class="form-text">En móviles, toca para seleccionar varias; en escritorio usa Ctrl/Cmd.</div>
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mt-3">
+            <a href="{% url 'tarea_list' %}" class="btn btn-outline-secondary">Volver</a>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
