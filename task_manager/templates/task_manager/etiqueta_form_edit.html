@@ -1,0 +1,31 @@
+{% extends "task_manager/base.html" %}
+{% block title %}Editar Etiqueta{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Editar Etiqueta</h4>
+
+        <form method="post" class="needs-validation">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <input type="text" name="nombre" class="form-control" required
+                   value="{{ form.nombre.value|default:'' }}">
+          </div>
+
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-end">
+            <a href="{% url 'etiqueta_list' %}" class="btn btn-outline-secondary">Volver</a>
+            <button type="submit" class="btn btn-primary">Guardar cambios</button>
+          </div>
+        </form>
+
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+

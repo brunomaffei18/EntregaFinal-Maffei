@@ -10,35 +10,57 @@
 
         <!-- Formulario de búsqueda (GET) -->
         <form method="get" action="{% url 'tarea_buscar' %}" class="row g-3 mb-3">
-          <div class="col-12 col-md-6">
+          <div class="col-12 col-md-4">
             <label class="form-label">Texto</label>
             <input type="text" name="q" value="{{ request.GET.q }}" class="form-control" placeholder="Título o descripción">
           </div>
           <div class="col-12 col-md-3">
             <label class="form-label">Estado</label>
             <select name="estado" class="form-select">
-              <option value="">Todos</option>
-              <option value="todo"  {% if request.GET.estado == 'todo' %}selected{% endif %}>Por hacer</option>
-              <option value="doing" {% if request.GET.estado == 'doing' %}selected{% endif %}>En progreso</option>
-              <option value="done"  {% if request.GET.estado == 'done' %}selected{% endif %}>Hecha</option>
+              {% for key,label in form.estado.field.choices %}
+                <option value="{{ key }}" {% if form.estado.value == key %}selected{% endif %}>{{ label|default:"Todos" }}</option>
+              {% endfor %}
             </select>
           </div>
-          <div class="col-12 col-md-3 d-flex align-items-end">
-            <div class="d-grid w-100">
+          <div class="col-12 col-md-3">
+            <label class="form-label">Proyecto</label>
+            {% with selected=form.proyecto.value|stringformat:'s' %}
+              <select name="proyecto" class="form-select">
+                <option value="">Todos</option>
+                {% for obj in form.proyecto.field.queryset %}
+                  <option value="{{ obj.pk }}" {% if selected == obj.pk|stringformat:'s' %}selected{% endif %}>{{ obj }}</option>
+                {% endfor %}
+              </select>
+            {% endwith %}
+          </div>
+          <div class="col-12 col-md-2">
+            <label class="form-label">Etiqueta</label>
+            {% with selected=form.etiqueta.value|stringformat:'s' %}
+              <select name="etiqueta" class="form-select">
+                <option value="">Todas</option>
+                {% for obj in form.etiqueta.field.queryset %}
+                  <option value="{{ obj.pk }}" {% if selected == obj.pk|stringformat:'s' %}selected{% endif %}>{{ obj }}</option>
+                {% endfor %}
+              </select>
+            {% endwith %}
+          </div>
+          <div class="col-12">
+            <div class="d-grid">
               <button class="btn btn-primary">Buscar</button>
             </div>
           </div>
         </form>
 
         <!-- Resultados -->
-        <div class="table-responsive">
+        <div class="table-responsive" style="overflow: visible;">
           <table class="table align-middle">
             <thead>
               <tr>
                 <th>Título</th>
                 <th class="text-nowrap">Estado</th>
-                <th>Proyecto</th>
+                <th class="d-none d-md-table-cell">Proyecto</th>
                 <th class="text-nowrap">Fecha límite</th>
+                <th class="text-nowrap">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -47,19 +69,22 @@
                   <td class="fw-medium">{{ t.titulo }}</td>
                   <td>
                     {% if t.estado == 'done' %}
-                      <span class="badge text-bg-success">Hecha</span>
+                      <span class="badge text-bg-success">Finalizado</span>
                     {% elif t.estado == 'doing' %}
                       <span class="badge text-bg-warning">En progreso</span>
                     {% else %}
-                      <span class="badge text-bg-secondary">Por hacer</span>
+                      <span class="badge text-bg-secondary">Pendiente</span>
                     {% endif %}
                   </td>
-                  <td class="text-body-secondary">{{ t.proyecto|default:"—" }}</td>
-                  <td class="text-body-secondary">{{ t.fecha_limite|date:"Y-m-d"|default:"—" }}</td>
+                  <td class="text-body-secondary d-none d-md-table-cell">{{ t.proyecto|default:"—" }}</td>
+                  <td class="text-body-secondary">{{ t.fecha_limite|date:"d/m/Y"|default:"—" }}</td>
+                  <td>
+                    <a href="{% url 'tarea_detail' t.id %}" class="btn btn-sm btn-outline-primary">Ver</a>
+                  </td>
                 </tr>
               {% empty %}
                 <tr>
-                  <td colspan="4" class="text-center text-body-secondary py-4">Sin resultados.</td>
+                  <td colspan="5" class="text-center text-body-secondary py-4">Sin resultados.</td>
                 </tr>
               {% endfor %}
             </tbody>

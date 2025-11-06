@@ -1,0 +1,35 @@
+{% extends "task_manager/base.html" %}
+{% block title %}Editar perfil{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-8 col-lg-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="mb-3">Editar perfil</h4>
+        <form method="post" enctype="multipart/form-data" class="needs-validation">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Avatar</label>
+            <input type="file" name="avatar" class="form-control">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Biografía</label>
+            <textarea name="bio" class="form-control" rows="4">{{ form.instance.bio }}</textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Link</label>
+            <input type="url" name="link" class="form-control" value="{{ form.instance.link }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Fecha de nacimiento</label>
+            <input type="date" name="birthdate" class="form-control" value="{{ form.instance.birthdate|date:'Y-m-d' }}">
+          </div>
+          <button class="btn btn-primary">Guardar</button>
+          <a href="{% url 'password_change' %}" class="btn btn-outline-secondary">Cambiar contraseña</a>
+          <a href="{% url 'profile' %}" class="btn btn-link">Volver</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

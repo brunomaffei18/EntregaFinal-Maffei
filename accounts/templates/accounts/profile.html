@@ -1,0 +1,28 @@
+{% extends "task_manager/base.html" %}
+{% load static %}
+{% block title %}Perfil{% endblock %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h4 class="mb-3">Mi perfil</h4>
+    <div class="d-flex gap-3 align-items-center">
+      {% if request.user.profile.avatar %}
+        <img class="rounded" src="{{ request.user.profile.avatar.url }}" alt="avatar" width="96" height="96">
+      {% else %}
+        <img class="rounded" src="{% static 'img/default-avatar.svg' %}" alt="avatar" width="96" height="96">
+      {% endif %}
+      <div>
+        <div class="fw-semibold">{{ request.user.get_full_name|default:request.user.username }}</div>
+        <div class="text-body-secondary">{{ request.user.email }}</div>
+        {% if request.user.profile.link %}<div><a href="{{ request.user.profile.link }}" target="_blank">{{ request.user.profile.link }}</a></div>{% endif %}
+        {% if request.user.profile.birthdate %}<div class="text-body-secondary">Cumpleaños: {{ request.user.profile.birthdate|date:"d/m/Y" }}</div>{% endif %}
+      </div>
+    </div>
+    {% if request.user.profile.bio %}
+      <hr><p class="mb-0">{{ request.user.profile.bio }}</p>
+    {% endif %}
+    <hr>
+    <a href="{% url 'profile_edit' %}" class="btn btn-outline-secondary">Editar perfil</a>
+  </div>
+</div>
+{% endblock %}

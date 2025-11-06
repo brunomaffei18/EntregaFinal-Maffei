@@ -1,0 +1,18 @@
+{% extends "task_manager/base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Confirmar borrado</h4>
+        <p>¿Estás seguro que querés eliminar <strong>{{ object.title }}</strong>?</p>
+        <form method="post">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger me-2">Sí, eliminar</button>
+          <a href="{% url 'task-list' %}" class="btn btn-outline-secondary">Cancelar</a>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

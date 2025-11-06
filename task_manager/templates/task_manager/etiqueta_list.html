@@ -9,21 +9,37 @@
 
 <div class="card shadow-sm">
   <div class="card-body">
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow: visible;">
       <table class="table align-middle">
         <thead>
           <tr>
             <th>Nombre</th>
+            <th class="text-nowrap">Acciones</th>
           </tr>
         </thead>
         <tbody>
           {% for e in etiquetas %}
             <tr>
               <td class="fw-medium">{{ e.nombre }}</td>
+              <td>
+                <!-- Desktop buttons -->
+                <div class="d-none d-md-flex align-items-center">
+                  <a class="btn btn-sm btn-outline-secondary me-2" href="{% url 'etiqueta_update' e.id %}">Editar</a>
+                  <a class="btn btn-sm btn-outline-danger" href="{% url 'etiqueta_delete' e.id %}">Eliminar</a>
+                </div>
+                <!-- Mobile dropdown -->
+                <div class="dropdown d-inline-block d-md-none">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">Acciones</button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'etiqueta_update' e.id %}">Editar</a></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'etiqueta_delete' e.id %}">Eliminar</a></li>
+                  </ul>
+                </div>
+              </td>
             </tr>
           {% empty %}
             <tr>
-              <td class="text-center text-body-secondary py-4">No hay etiquetas.</td>
+              <td colspan="2" class="text-center text-body-secondary py-4">No hay etiquetas.</td>
             </tr>
           {% endfor %}
         </tbody>

@@ -14,15 +14,16 @@
 
 <div class="card shadow-sm">
   <div class="card-body">
-    <div class="table-responsive">
+    <div class="table-responsive" style="overflow: visible;">
       <table class="table align-middle">
         <thead>
           <tr>
             <th>Título</th>
             <th class="text-nowrap">Estado</th>
-            <th>Proyecto</th>
+            <th class="d-none d-md-table-cell">Proyecto</th>
             <th class="text-nowrap">Fecha límite</th>
-            <th>Etiquetas</th>
+            <th class="d-none d-md-table-cell">Etiquetas</th>
+            <th>Acciones</th>
           </tr>
         </thead>
         <tbody>
@@ -30,27 +31,61 @@
             <tr>
               <td class="fw-medium">{{ t.titulo }}</td>
               <td>
-                {% if t.estado == 'done' %}
-                  <span class="badge text-bg-success">Hecha</span>
-                {% elif t.estado == 'doing' %}
-                  <span class="badge text-bg-warning">En progreso</span>
-                {% else %}
-                  <span class="badge text-bg-secondary">Por hacer</span>
-                {% endif %}
+                <div class="dropdown">
+                  <button class="btn btn-sm border-0 bg-transparent p-0 dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    {% if t.estado == 'done' %}
+                      <span class="badge text-bg-success">Finalizado</span>
+                    {% elif t.estado == 'doing' %}
+                      <span class="badge text-bg-warning">En progreso</span>
+                    {% else %}
+                      <span class="badge text-bg-secondary">Pendiente</span>
+                    {% endif %}
+                  </button>
+                  <div class="dropdown-menu dropdown-menu-end shadow-sm">
+                    <div class="dropdown-header">Cambiar estado</div>
+                    <form method="post" action="{% url 'tarea_cambiar_estado' t.id %}">
+                      {% csrf_token %}
+                      <button class="dropdown-item {% if t.estado == 'toDo' %}active{% endif %}" name="estado" value="toDo" type="submit">Pendiente</button>
+                      <button class="dropdown-item {% if t.estado == 'doing' %}active{% endif %}" name="estado" value="doing" type="submit">En progreso</button>
+                      <button class="dropdown-item {% if t.estado == 'done' %}active{% endif %}" name="estado" value="done" type="submit">Finalizado</button>
+                    </form>
+                  </div>
+                </div>
               </td>
-              <td class="text-body-secondary">{{ t.proyecto|default:"—" }}</td>
-              <td class="text-body-secondary">{{ t.fecha_limite|date:"Y-m-d"|default:"—" }}</td>
-              <td>
+              <td class="text-body-secondary d-none d-md-table-cell">{{ t.proyecto|default:"—" }}</td>
+              <td class="text-body-secondary">{{ t.fecha_limite|date:"d/m/Y"|default:"—" }}</td>
+              <td class="d-none d-md-table-cell">
                 {% for tag in t.etiquetas.all %}
                   <span class="badge text-bg-light border me-1 mb-1">{{ tag.nombre }}</span>
                 {% empty %}
                   <span class="text-body-secondary">—</span>
                 {% endfor %}
               </td>
+              <td>
+                {% if user.is_authenticated %}
+                  <!-- Desktop buttons -->
+                  <div class="d-none d-md-flex align-items-center">
+                    <a href="{% url 'tarea_detail' t.id %}" class="btn btn-sm btn-outline-primary me-2">Ver</a>
+                    <a href="{% url 'tarea_update' t.id %}" class="btn btn-sm btn-outline-secondary me-2">Editar</a>
+                    <a href="{% url 'tarea_delete' t.id %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                  </div>
+                  <!-- Mobile dropdown -->
+                  <div class="dropdown d-inline-block d-md-none">
+                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                      Acciones
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item" href="{% url 'tarea_detail' t.id %}">Ver</a></li>
+                      <li><a class="dropdown-item" href="{% url 'tarea_update' t.id %}">Editar</a></li>
+                      <li><a class="dropdown-item text-danger" href="{% url 'tarea_delete' t.id %}">Eliminar</a></li>
+                    </ul>
+                  </div>
+                {% endif %}
+              </td>
             </tr>
           {% empty %}
             <tr>
-              <td colspan="5" class="text-center text-body-secondary py-4">No hay tareas.</td>
+              <td colspan="6" class="text-center text-body-secondary py-4">No hay tareas.</td>
             </tr>
           {% endfor %}
         </tbody>

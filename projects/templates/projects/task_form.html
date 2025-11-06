@@ -1,0 +1,59 @@
+{% extends "task_manager/base.html" %}
+{% block title %}{% if object %}Editar tarea (Projects){% else %}Nueva tarea (Projects){% endif %}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-12 col-md-10 col-lg-8 col-xxl-6">
+    <div class="card shadow-sm mt-3">
+      <div class="card-body">
+        <h4 class="card-title mb-3">{% if object %}Editar Tarea{% else %}Nueva Tarea{% endif %}</h4>
+
+        <form method="post" enctype="multipart/form-data" class="needs-validation">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label">Título</label>
+            <input type="text" name="title" class="form-control" required value="{{ form.title.value|default:'' }}">
+            {% for e in form.title.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Categoría</label>
+            <input type="text" name="category" class="form-control" value="{{ form.category.value|default:'' }}">
+            {% for e in form.category.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Descripción</label>
+            <textarea name="description" class="form-control" rows="5">{{ form.description.value }}</textarea>
+            {% for e in form.description.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+          </div>
+
+          <div class="row g-3">
+            <div class="col-12 col-md-4">
+              <label class="form-label">Prioridad</label>
+              <input type="number" name="priority" class="form-control" value="{{ form.priority.value|default:'' }}">
+              {% for e in form.priority.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Fecha límite</label>
+              <input type="date" name="deadline" class="form-control" value="{{ form.deadline.value|date:'Y-m-d' }}">
+              {% for e in form.deadline.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+            <div class="col-12 col-md-4">
+              <label class="form-label">Imagen</label>
+              <input type="file" name="image" class="form-control">
+              {% for e in form.image.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+            </div>
+          </div>
+
+          <div class="d-grid gap-2 d-sm-flex justify-content-sm-end mt-3">
+            <a href="{% url 'task-list' %}" class="btn btn-outline-secondary">Volver</a>
+            <button type="submit" class="btn btn-primary">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

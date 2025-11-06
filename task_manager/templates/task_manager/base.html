@@ -1,33 +1,121 @@
+{% load static %}
 <!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1"> <!-- responsive -->
-    <title>{% block title %}Tareas{% endblock %}</title>
-    <!-- Bootstrap 5 -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg bg-body-tertiary">
-      <div class="container">
-        <a class="navbar-brand" href="{% url 'home' %}">Simple Tasks</a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div id="topNav" class="collapse navbar-collapse">
-          <ul class="navbar-nav me-auto">
-            <li class="nav-item"><a class="nav-link" href="{% url 'proyecto_list' %}">Proyectos</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'tarea_list' %}">Tareas</a></li>
-            <li class="nav-item"><a class="nav-link" href="{% url 'etiqueta_list' %}">Etiquetas</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+<html lang="es" data-bs-theme="light">
+<head>
+  <meta charset="utf-8">
+  <title>{% block title %}Task Manager{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" href="{% static 'img/favicon.svg' %}" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100 bg-body-tertiary">
 
-    <main class="container py-4">
-      {% block content %}{% endblock %}
-    </main>
+<nav class="navbar navbar-expand-lg bg-body border-bottom sticky-top">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" href="{% url 'home' %}">TaskManager</a>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-  </body>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div id="mainNav" class="collapse navbar-collapse">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'about' %}">Acerca de mí</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'proyecto_list' %}">Proyectos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'tarea_list' %}">Tareas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'etiqueta_list' %}">Etiquetas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'task-list' %}">Demo (CBV)</a></li>
+      </ul>
+
+      <ul class="navbar-nav align-items-center gap-2">
+        <li class="nav-item">
+          <button id="themeToggle" type="button" class="nav-link btn btn-link p-0" aria-label="Cambiar tema" title="Cambiar a modo oscuro">
+            <span id="themeIcon" class="fs-5">🌙</span>
+          </button>
+        </li>
+        {% if user.is_authenticated %}
+          <li class="nav-item">
+            <a class="nav-link d-flex align-items-center gap-2" href="{% url 'profile' %}">
+              {% if request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" alt="avatar" class="rounded-circle border" width="24" height="24">
+              {% else %}
+                <img src="{% static 'img/default-avatar.svg' %}" alt="avatar" class="rounded-circle border" width="24" height="24">
+              {% endif %}
+              <span>Perfil</span>
+            </a>
+          </li>
+          
+          <li class="nav-item">
+            <form method="post" action="{% url 'logout' %}" class="m-0">
+              {% csrf_token %}
+              <button type="submit" class="nav-link border-0 bg-transparent">Salir</button>
+            </form>
+          </li>
+        {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Ingresar</a></li>
+          <li class="nav-item"><a class="nav-link" href="{% url 'signup' %}">Registro</a></li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-4 flex-grow-1">
+  {% if messages %}
+    <div class="mb-3">
+      {% for message in messages %}
+        <div class="alert alert-{{ message.tags|default:'info' }} mb-2">{{ message }}</div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="py-4 border-top bg-body mt-auto">
+  <div class="container text-center text-muted">
+    <small>© {{ now|date:"Y" }} TaskManager</small>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+(function() {
+  const storageKey = 'theme';
+  const getPreferredTheme = () => {
+    const stored = localStorage.getItem(storageKey);
+    if (stored) return stored;
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  };
+  const applyTheme = (theme) => {
+    document.documentElement.setAttribute('data-bs-theme', theme);
+    const btn = document.getElementById('themeToggle');
+    const icon = document.getElementById('themeIcon');
+    if (btn) btn.setAttribute('title', theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro');
+    if (icon) icon.textContent = theme === 'dark' ? '🌙' : '☀️';
+  };
+  // Initialize as early as possible
+  applyTheme(getPreferredTheme());
+  window.addEventListener('DOMContentLoaded', function() {
+    applyTheme(getPreferredTheme());
+    const btn = document.getElementById('themeToggle');
+    if (btn) {
+      btn.addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-bs-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        localStorage.setItem(storageKey, next);
+        applyTheme(next);
+      });
+    }
+    // Keep in sync with system changes if user never toggled
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener && mq.addEventListener('change', () => {
+      if (!localStorage.getItem(storageKey)) {
+        applyTheme(getPreferredTheme());
+      }
+    });
+  });
+})();
+</script>
+</body>
 </html>

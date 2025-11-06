@@ -1,0 +1,24 @@
+{% extends "task_manager/base.html" %}
+{% block title %}{{ titulo|default:"Confirmar borrado" }}{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm mt-3">
+  <div class="card-body">
+    <h4 class="card-title mb-3">{{ titulo|default:"Confirmar borrado" }}</h4>
+    <p>¿Estás seguro que querés eliminar <strong>{{ obj }}</strong>?</p>
+    <form method="post">
+      {% csrf_token %}
+      {% if related_count %}
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" id="deleteRelated" name="delete_related" value="1">
+          <label class="form-check-label" for="deleteRelated">
+            Eliminar también {{ related_count }} tarea{% if related_count != 1 %}s{% endif %} relacionadas.
+          </label>
+        </div>
+      {% endif %}
+      <button type="submit" class="btn btn-danger me-2">Sí, eliminar</button>
+      <a href="{% url volver_url %}" class="btn btn-outline-secondary">Cancelar</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

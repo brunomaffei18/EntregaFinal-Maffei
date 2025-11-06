@@ -1,0 +1,61 @@
+{% extends "task_manager/base.html" %}
+{% block title %}Tareas (Projects){% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h4 class="m-0">Tareas (Projects)</h4>
+  <a href="{% url 'task-create' %}" class="btn btn-primary">Nueva</a>
+  
+</div>
+
+<div class="card shadow-sm">
+  <div class="card-body">
+    <div class="table-responsive" style="overflow: visible;">
+      <table class="table align-middle">
+        <thead>
+          <tr>
+            <th>Título</th>
+            <th class="d-none d-md-table-cell">Categoría</th>
+            <th>Prioridad</th>
+            <th class="text-nowrap">Fecha límite</th>
+            <th class="text-nowrap">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for task in tasks %}
+            <tr>
+              <td class="fw-medium"><a href="{% url 'task-detail' task.pk %}">{{ task.title }}</a></td>
+              <td class="text-body-secondary d-none d-md-table-cell">{{ task.category|default:"—" }}</td>
+              <td class="text-body-secondary">{{ task.priority }}</td>
+              <td class="text-body-secondary">{{ task.deadline|date:"d/m/Y" }}</td>
+              <td>
+                <!-- Desktop buttons -->
+                <div class="d-none d-md-flex align-items-center">
+                  <a href="{% url 'task-detail' task.pk %}" class="btn btn-sm btn-outline-primary me-2">Ver</a>
+                  <a href="{% url 'task-update' task.pk %}" class="btn btn-sm btn-outline-secondary me-2">Editar</a>
+                  <a href="{% url 'task-delete' task.pk %}" class="btn btn-sm btn-outline-danger">Eliminar</a>
+                </div>
+                <!-- Mobile dropdown -->
+                <div class="dropdown d-inline-block d-md-none">
+                  <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Acciones
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                    <li><a class="dropdown-item" href="{% url 'task-detail' task.pk %}">Ver</a></li>
+                    <li><a class="dropdown-item" href="{% url 'task-update' task.pk %}">Editar</a></li>
+                    <li><a class="dropdown-item text-danger" href="{% url 'task-delete' task.pk %}">Eliminar</a></li>
+                  </ul>
+                </div>
+              </td>
+            </tr>
+          {% empty %}
+            <tr>
+              <td colspan="5" class="text-center text-body-secondary py-4">No hay tareas registradas todavía.</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}
